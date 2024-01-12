@@ -1,0 +1,109 @@
+(PRIMARY KPI'S)
+
+1. TOTAL NUMBER OF CURRENT YEAR CASUALTIES:
+   SELLECT SUM(number_of_casualties)  AS CY_CASUALTIES FROM accident_data 
+   WHERE YEAR(accident_date)="2022";
+    
+2. TOTAL NUMBER OF CURRENT YEAR ACCIDENTS:
+   SELLECT COUNT(DISTINCT accident_index)  AS CY_ACCIDENTS  FROM accident_data 
+   WHERE YEAR(accident_date)="2022";
+    
+3. TOTAL NUMBER OF CURRENT YEAR FATAL CASUALTIES:
+   SELLECT SUM(number_of_casualties)  AS CY_FATAL_CASUALTIES FROM accident_data 
+   WHERE YEAR(accident_date)="2022" AND accident_severity='Fatal';
+
+4.TOTAL NUMBER OF CURRENT YEAR SERIOUS CASUALTIES:
+   SELLECT SUM(number_of_casualties)  AS CY_SERIOUS_CASUALTIES FROM accident_data 
+   WHERE YEAR(accident_date)="2022" AND accident_severity='Serious';
+
+5.TOTAL NUMBER OF CURRENT YEAR SLIGHT CASUALTIES:
+   SELLECT SUM(number_of_casualties)  AS CY_SLIGHT_CASUALTIES FROM accident_data 
+   WHERE YEAR(accident_date)="2022" AND accident_severity='Slight';
+
+
+(SECONDARY KPI'S)
+
+1.TOTAL NUMBER OF CY CASAULTIES  BY VEHICLE TYPE
+
+SELECT
+  CASE
+  WHEN vehicle type IN ('Agricultural vehicle') THEN 'Agricultural'
+  WHEN vehicle type IN ('Car', 'Taxi/Private hire car') THEN 'Cars'
+  WHEN vehicle_type IN ('Motorcycle 125cc and under', *Motorcycle 50cc and under, Motorcycle over 125cc and up to 500cc "Motorcycle over 500cc', 'Pedal cycle) THEN 'Bike
+  WHEN vehicle type I (Bus or coach (17 or more pass seats)', Minibus (816 passenger seats)) THEN 'Bus'
+  WHEN vehicle_type IN ('Goods 7.5 tonnes egw and over, Goods over 3.5t. and under 7.5t, "Van / Goods 3.5 tonnes gw or under' THEN 'Van'
+  ELSE "Other"
+  END As vehicle_group ,SUM(number_of_casualties) as CY Casulaties
+FROM road_accident
+WHERE YEAR(accident_date) ="2022"
+GROUP BY
+ CASE
+  WHEN vehicle type IN ('Agricultural vehicle') THEN 'Agricultural'
+  WHEN vehicle type IN ('Car', 'Taxi/Private hire car') THEN 'Cars'
+  WHEN vehicle_type IN ('Motorcycle 125cc and under', *Motorcycle 50cc and under, Motorcycle over 125cc and up to 500cc "Motorcycle over 500cc', 'Pedal cycle) THEN 'Bike
+  WHEN vehicle type I (Bus or coach (17 or more pass seats)', Minibus (816 passenger seats)) THEN 'Bus'
+  WHEN vehicle_type IN ('Goods 7.5 tonnes egw and over, Goods over 3.5t. and under 7.5t, "Van / Goods 3.5 tonnes gw or under' THEN 'Van'
+  ELSE "Other";
+
+2. CURRENT YEAR AND PREVIOUS YEAR MONTHLY TREND BASED ON TOTAL CASUALTIES
+
+  FOR CURRENT YEAR:
+
+     SELECT MONTHNAME(accident_date),SUM(number_of_casualties) 
+     FROM road_accident
+     WHERE YEAR(accient_date)="2022"
+     GROUP BY MONTH(accident_date);
+
+
+  FOR PREVIOUS YEAR:
+
+    SELECT MONTHNAME(accident_date),SUM(number_of_casualties) 
+    FROM road_accident
+    WHERE YEAR(accient_date)="2021"
+    GROUP BY MONTH(accident_date);
+
+
+3.CASUALTIES BASED ON ROAD_TYPE:
+
+  SELECT road_type,SUM(number_of_casualties) FROM road_accident
+  WHERE YEAR(accident_date)="2022"
+  GROUP BY road_type;
+
+4.RURAL/URBAN CY CASUALTIES:
+
+  SELECT urban_or_rural_area , SUM(number_of_casualties)*100 /(SELECT SUM(number_of_casualties) FROM road_accident WHERE YEAR(accident_date)="2022")
+  FROM road_accident
+  WHERE YEAR(accident_road)="2022"
+  GROUP BY  urban_or_rural_area;
+
+5.CASUALTIES BY LIGHT CONDITION:
+   
+  SELECT Casualties by Light Condition
+     CASE
+     WHEN Light conditions IN ('Daylight') THEN 'Day' 
+     WHEN light conditions IN ('Darkness - lighting unknown", 'Darkness lights lit', 'Darkness - lights unlit', 'Darkness - no lighting") THEN 'Night'
+     END AS Light Condition, CAST(CAST(SUM(number of casualties) AS DECIMAL(10,2)). 100/ (SELECT CAST(SUM(number of casualties) AS DECIMAL(10,2)) 
+     FROM road accident, WHERE YEAR(accident date) - 2022') AS DECIMAL (10,2)) AS CY Casualties PCT
+  FROM road accident
+  WHERE YEAR(accident dats) '2022'
+  GROUP BY
+  CASE
+     WHEN Light conditions IN ('Daylight') THEN 'Day' 
+     WHEN light conditions IN ('Darkness - lighting unknown", 'Darkness lights lit', 'Darkness - lights unlit', 'Darkness - no lighting") THEN 'Night'
+  END;
+
+6.TOP 10 CASUALTIES BASED ON LOCAL_AUTHORITY:
+  
+
+  SELECT local_authority ,SUM(number_of_casualties) AS TOTAL_CASUALTIES
+  FROM road_accident
+  GROUP BY local_authority 
+  ORDER BY SUM(number_of_casualties) DESC
+  LIMIT 10;
+
+  
+
+
+
+
+
